@@ -1,0 +1,37 @@
+{
+  "name": "cred-arc-api",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "CredArc lending intelligence API — Node.js ESM backend",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "lint": "eslint src/",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "migrate": "node-pg-migrate up",
+    "migrate:down": "node-pg-migrate down",
+    "migrate:create": "node-pg-migrate create"
+  },
+  "dependencies": {
+    "@fastify/cors": "^9.0.1",
+    "@fastify/jwt": "^8.0.1",
+    "@fastify/rate-limit": "^9.1.0",
+    "bullmq": "^5.13.0",
+    "dotenv": "^16.4.5",
+    "fastify": "^4.28.1",
+    "ioredis": "^5.4.1",
+    "node-pg-migrate": "^7.6.1",
+    "pg": "^8.12.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.9.0",
+    "eslint": "^9.9.0",
+    "vitest": "^2.0.5"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
