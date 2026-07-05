@@ -4,10 +4,10 @@ import { leadsService } from './leadsService.js'
 const createLeadSchema = z.object({
   name: z.string().min(1).max(100).optional(),
   mobile: z.string().regex(/^[6-9]\d{9}$/, 'Invalid Indian mobile number'),
-  ref_source: z.string().optional(),
-  utm_source: z.string().optional(),
-  utm_medium: z.string().optional(),
-  utm_campaign: z.string().optional(),
+  ref_source: z.string().nullish(),
+  utm_source: z.string().nullish(),
+  utm_medium: z.string().nullish(),
+  utm_campaign: z.string().nullish(),
 })
 
 export const leadsController = {
