@@ -30,9 +30,10 @@ export const otpService = {
 
     await leadsService.advanceStatus(leadId, 'otp_sent', 'system')
 
-    // TODO: integrate SMS provider here. For now log in dev.
-    if (process.env.NODE_ENV === 'development') {
+    // TODO: integrate SMS provider (Twilio/MSG91) for production.
+    if (process.env.NODE_ENV !== 'production') {
       console.log(`[OTP DEV] mobile=${mobile} code=${code}`)
+      return { sent: true, expiresAt, dev_otp: code }
     }
 
     return { sent: true, expiresAt }
