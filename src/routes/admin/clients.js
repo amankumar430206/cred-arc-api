@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { db } from '../../db/index.js'
 import { adminAuth } from '../../middleware/adminAuth.js'
+import { devOtpLog } from '../../modules/auth/otpService.js'
 
 export const adminClientsRoutes = async (fastify) => {
   fastify.addHook('preHandler', adminAuth)
@@ -45,6 +46,14 @@ export const adminClientsRoutes = async (fastify) => {
     )
     if (!rows[0]) return reply.code(404).send({ error: 'Client not found' })
     return reply.send({ data: rows[0] })
+  })
+
+  // Dev-only OTP viewer — not available in production
+  fastify.get('/v1/admin/dev/otps', async (request, reply) => {
+    if (process.env.NODE_ENV === 'production') {
+      return reply.code(404).send({ error: 'Not found' })
+    }
+    return reply.send({ data: devOtpLog })
   })
 
   fastify.get('/v1/admin/kft-sessions', async (request, reply) => {

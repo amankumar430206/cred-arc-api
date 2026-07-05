@@ -10,6 +10,10 @@ const hashCode = (code) => createHash('sha256').update(String(code)).digest('hex
 
 const generateCode = () => String(randomInt(100000, 999999))
 
+// Dev-only in-memory OTP log (last 50 entries, cleared on restart)
+export const devOtpLog = []
+const DEV_LOG_MAX = 50
+
 export const otpService = {
   sendOtp: async ({ mobile, leadId }) => {
     const code = generateCode()
@@ -33,6 +37,8 @@ export const otpService = {
     // TODO: integrate SMS provider (Twilio/MSG91) for production.
     if (process.env.NODE_ENV !== 'production') {
       console.log(`[OTP DEV] mobile=${mobile} code=${code}`)
+      devOtpLog.unshift({ mobile, code, leadId, expiresAt, createdAt: new Date().toISOString() })
+      if (devOtpLog.length > DEV_LOG_MAX) devOtpLog.length = DEV_LOG_MAX
       return { sent: true, expiresAt, dev_otp: code }
     }
 
