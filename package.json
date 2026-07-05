@@ -12,7 +12,9 @@
     "test:watch": "vitest",
     "migrate": "node-pg-migrate up",
     "migrate:down": "node-pg-migrate down",
-    "migrate:create": "node-pg-migrate create"
+    "migrate:create": "node-pg-migrate create",
+    "migrate:run": "node scripts/migrate.js",
+    "seed:admin": "node scripts/seed-admin.js"
   },
   "dependencies": {
     "@fastify/cors": "^9.0.1",
