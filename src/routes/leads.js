@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { leadsController } from '../modules/leads/leadsController.js'
 import { embedService } from '../modules/lifecycle/embedService.js'
 import { leadsService } from '../modules/leads/leadsService.js'
+import { eligibilityService } from '../modules/eligibility/eligibilityService.js'
 
 export const leadsRoutes = async (fastify) => {
   // Create lead (called from onboarding page on load)
@@ -24,7 +25,23 @@ export const leadsRoutes = async (fastify) => {
       utmCampaign: lead.utm_campaign,
     })
 
+    if (result.eligible === false) {
+      return reply.code(422).send({ error: 'ineligible', data: result })
+    }
+
     return reply.send({ data: result })
+  })
+
+  // Run eligibility check for a lead
+  fastify.post('/v1/leads/:id/eligibility', async (request, reply) => {
+    const lead = await leadsService.findById(request.params.id)
+    if (!lead) return reply.code(404).send({ error: 'Lead not found' })
+    if (lead.status !== 'otp_verified') {
+      return reply.code(400).send({ error: 'OTP must be verified before running eligibility check' })
+    }
+
+    const result = await eligibilityService.checkLead(lead)
+    return reply.code(200).send({ data: result })
   })
 
   // Poll KFT session status
