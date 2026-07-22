@@ -56,6 +56,18 @@ export const adminClientsRoutes = async (fastify) => {
     return reply.send({ data: devOtpLog })
   })
 
+  fastify.get('/v1/admin/webhook-events', async (request, reply) => {
+    const { rows } = await db.query(
+      `SELECT w.id, w.event_type, w.lead_id, w.session_id, w.processed, w.received_at,
+              l.name as lead_name, l.status as lead_status
+       FROM kft_webhook_events w
+       LEFT JOIN leads l ON l.id = w.lead_id
+       ORDER BY w.received_at DESC
+       LIMIT 100`
+    )
+    return reply.send({ data: rows })
+  })
+
   fastify.get('/v1/admin/kft-sessions', async (request, reply) => {
     const { rows } = await db.query(
       `SELECT k.id, k.lead_id, k.utm_code, k.token_valid_till, k.consent_given, k.status, k.created_at,
