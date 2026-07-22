@@ -25,7 +25,15 @@ export const authRoutes = async (fastify) => {
     }).parse(request.body)
 
     const result = await otpService.verifyOtp({ mobile, code, leadId: lead_id })
-    if (!result.success) return reply.code(400).send({ error: result.reason })
+    if (!result.success) {
+      const OTP_MESSAGES = {
+        otp_not_found:     'No active OTP found for this number. Please request a new OTP.',
+        otp_expired:       'Your OTP has expired. Please request a new OTP.',
+        too_many_attempts: 'Too many incorrect attempts. Please wait a moment and request a new OTP.',
+        invalid_code:      'Incorrect OTP. Please double-check the code and try again.',
+      }
+      return reply.code(400).send({ error: OTP_MESSAGES[result.reason] ?? result.reason })
+    }
     return reply.send({ data: { verified: true } })
   })
 
