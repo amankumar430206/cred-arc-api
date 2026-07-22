@@ -4,7 +4,7 @@ const BASE_URL = process.env.KFT_BASE_URL
 const AUDIENCE_SECRET = process.env.KFT_AUDIENCE_SECRET_CODE
 const PARTNER_CODE = process.env.KFT_PARTNER_CODE
 
-const kftFetch = async (path, { method = 'POST', body, token, version = '' } = {}) => {
+const kftFetch = async (path, { method = 'POST', body, token, partnerCustomerId, version = '' } = {}) => {
   const headers = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -13,6 +13,7 @@ const kftFetch = async (path, { method = 'POST', body, token, version = '' } = {
 
   if (token) headers['K-Aurix-Token'] = token
   if (!token && AUDIENCE_SECRET) headers['K-Aurix-AudienceSecretCode'] = AUDIENCE_SECRET
+  if (partnerCustomerId) headers['K-Aurix-PartnerCustomerId'] = partnerCustomerId
 
   const res = await fetch(`${BASE_URL}${path}`, {
     method,

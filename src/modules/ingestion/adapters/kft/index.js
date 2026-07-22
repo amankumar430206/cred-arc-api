@@ -4,10 +4,11 @@ import { fixtures } from './fixtures/index.js'
 const isSandbox = () => process.env.NODE_ENV === 'test' || process.env.KFT_SANDBOX === 'true'
 
 export const kftAdapter = {
-  generateUTM: async ({ mobile, utmSource, utmMedium, utmCampaign }) => {
+  generateUTM: async ({ mobile, utmSource, utmMedium, utmCampaign, partnerCustomerId }) => {
     if (isSandbox()) return fixtures.generateUTM
 
     const res = await kftFetch('/api/utm_generation', {
+      partnerCustomerId,
       body: {
         UTMSource: utmSource ?? process.env.KFT_UTM_SOURCE ?? 'CREDARC',
         UTMMedium: utmMedium ?? 'app',
@@ -30,19 +31,33 @@ export const kftAdapter = {
     return res
   },
 
-  recordConsent: async ({ mobile, token, isPaPq = false, lenderId }) => {
+  recordConsent: async ({ mobile, token, partnerCustomerId, isPaPq = false, lenderId }) => {
     if (isSandbox()) return fixtures.recordConsent
 
     const query = isPaPq && lenderId ? `?is_pa_pq=true&lender_id=${lenderId}` : ''
 
     const res = await kftFetch(`/api/consent${query}`, {
       token,
+      partnerCustomerId,
       body: {
         MobileNumber: mobile,
         IsConsentGiven: true,
         PartnerCode: PARTNER_CODE,
         ConsentTimestamp: new Date().toISOString(),
+        PartnerCustID: partnerCustomerId,
       },
+    })
+
+    return res
+  },
+
+  refreshToken: async ({ refreshToken, partnerCustomerId }) => {
+    if (isSandbox()) return fixtures.generateToken
+
+    const res = await kftFetch('/api/generate_token', {
+      version: 'v3',
+      partnerCustomerId,
+      body: { RefreshToken: refreshToken },
     })
 
     return res
